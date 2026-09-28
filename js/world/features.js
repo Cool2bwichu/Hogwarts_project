@@ -163,9 +163,17 @@ export function buildRocks({ amount = 1 } = {}) {
   });
   const mat = makeSurface({ color: '#77736a', pattern: 'none', roughness: 0.92, grime: 1.4, bump: 0.03 });
   const spots = [[], [], []];
+  // Lowest ground under a rock's footprint, so no side of it hangs in the air.
+  const seat = (x, z, s) => {
+    let h = heightAt(x, z);
+    for (let k = 0; k < 6; k++) {
+      const a = (k / 6) * Math.PI * 2;
+      h = Math.min(h, heightAt(x + Math.cos(a) * s * 1.1, z + Math.sin(a) * s * 1.1));
+    }
+    return h;
+  };
   const tryPlace = (x, z, s) => {
-    const h = heightAt(x, z);
-    spots[Math.floor(rand() * 3)].push({ x, y: h - s * 0.25, z, s, r: rand() * Math.PI * 2, t: rand() });
+    spots[Math.floor(rand() * 3)].push({ x, y: seat(x, z, s) - s * 0.25, z, s, r: rand() * Math.PI * 2, t: rand() });
   };
   // Scree at the foot of the castle cliff and along the shore.
   for (let i = 0; i < 700 * amount; i++) {
@@ -186,7 +194,8 @@ export function buildRocks({ amount = 1 } = {}) {
     if (cz < 0.2) continue;
     const zz = z + 2 + rand() * 6;
     const sc = 3 + rand() * 5;
-    const y = heightAt(x, zz) - sc * 0.45 + (rand() - 0.5) * 6;
+    // Set into the face: its downhill edge rests on the rock below it.
+    const y = seat(x, zz, sc) - sc * 0.2 - rand() * 2;
     if (y < 1) continue;
     spots[Math.floor(rand() * 3)].push({ x, y, z: zz, s: sc, r: rand() * Math.PI * 2, t: rand() });
   }
