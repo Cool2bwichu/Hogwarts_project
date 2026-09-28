@@ -48,7 +48,7 @@ export const PLACES = [
   },
   {
     id: 'entrance', name: 'The Oak Front Doors', cat: 'castle', anchor: 'doors',
-    view: { target: [0, 52, -82], yaw: 0.08, pitch: 0.12, distance: 70 },
+    view: { target: [0, 54, -84], yaw: 3.06, pitch: 0.14, distance: 75 },
     tagline: 'Stone steps up to the great doors',
     summary: 'Carriages and walkers arrive on the north side. A flight of stone steps rises to huge oak front doors, which open into the flagged Entrance Hall and its marble staircase.',
     evidence: [
@@ -63,7 +63,7 @@ export const PLACES = [
   },
   {
     id: 'hall', name: 'The Great Hall', cat: 'castle', anchor: 'hall', major: true,
-    view: { target: [-61, 70, -61], yaw: -0.35, pitch: 0.33, distance: 150 },
+    view: { target: [-61, 60, -61], yaw: -2.55, pitch: 0.26, distance: 150 },
     tagline: 'Candles, four long tables and an enchanted ceiling',
     summary: 'The school’s dining and ceremonial hall lies through doors to the right as you cross the Entrance Hall, which here puts it on the west side. The kitchens are directly beneath it.',
     evidence: [
@@ -168,7 +168,7 @@ export const PLACES = [
   },
   {
     id: 'courtyard', name: 'The Courtyard', cat: 'castle', anchor: 'courtyard',
-    view: { target: [52, 55, -28], yaw: 0.7, pitch: 0.55, distance: 110 },
+    view: { target: [52, 48, -28], yaw: 2.4, pitch: 0.95, distance: 125 },
     tagline: 'Between lessons, out of the wind',
     summary: 'Students gather in a courtyard between classes. The books do not fix its place or shape; the atlas gives the north-east court an arcaded walk and a well-head.',
     evidence: [
@@ -249,7 +249,7 @@ export const PLACES = [
   },
   {
     id: 'greenhouses', name: 'Herbology Greenhouses', cat: 'grounds', anchor: 'greenhouses', major: true,
-    view: { target: [245, 50, 40], yaw: 0.6, pitch: 0.35, distance: 120 },
+    view: { target: [250, 30, 46], yaw: 0.6, pitch: 0.35, distance: 105 },
     tagline: 'Something is always growing',
     summary: 'Professor Sprout’s greenhouses stand outside the castle, drawn by Rowling to the south-east near the lake, beside a vegetable garden. First-years work in Greenhouse One; Greenhouse Three holds the more dangerous plants.',
     evidence: [
@@ -330,7 +330,7 @@ export const PLACES = [
   },
   {
     id: 'tomb', name: 'The White Tomb', cat: 'grounds', anchor: 'tomb',
-    view: { target: [318, 30, 104], yaw: 0.4, pitch: 0.18, distance: 70 },
+    view: { target: [318, 11, 104], yaw: 0.4, pitch: 0.2, distance: 58 },
     tagline: 'White marble by the water',
     summary: 'A white marble tomb stands beside the lake. It belongs to the end of the story; open the story note only if you don’t mind spoilers.',
     evidence: [
@@ -369,7 +369,7 @@ export const PLACES = [
   },
   {
     id: 'station', name: 'Hogsmeade Station', cat: 'wilds', anchor: 'station',
-    view: { target: [150, 20, 1405], yaw: 0.2, pitch: 0.2, distance: 260 },
+    view: { target: [150, 36, 1405], yaw: 0.2, pitch: 0.2, distance: 170 },
     tagline: 'The far side of the lake',
     summary: 'The Hogwarts Express stops at Hogsmeade station. Rowling’s note puts the station on the far side of the lake from the castle, with the carriage road going right round the water.',
     evidence: [
@@ -393,7 +393,7 @@ export const PLACES = [
   },
   {
     id: 'shack', name: 'The Shrieking Shack', cat: 'wilds', anchor: 'shack',
-    view: { target: [230, 70, -1060], yaw: 2.5, pitch: 0.25, distance: 160 },
+    view: { target: [230, 84, -1060], yaw: 2.5, pitch: 0.8, distance: 100 },
     tagline: 'The most haunted building in Britain',
     summary: 'A boarded-up house stands on a slope above Hogsmeade. The tunnel under the Whomping Willow ends here.',
     evidence: [

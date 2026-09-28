@@ -282,8 +282,9 @@ export function isBuiltUp(x, z, margin = 0) {
   if (boxDist(x, z, -18, -10, 186 + margin, 102 + margin) === 0) return true;
   if (Math.hypot((x - PITCH.x) / (60 + margin), (z - PITCH.z) / (112 + margin)) < 1) return true;
   for (const p of PATHS) if (polylineDist(x, z, p.pts) < p.width * 0.5 + 3 + margin) return true;
-  for (const s of [SITES.hagrid, SITES.pumpkins, SITES.garden, SITES.greenhouses, SITES.changingW, SITES.changingE, SITES.tomb, SITES.gates, SITES.willow, SITES.station]) {
+  for (const s of [SITES.hagrid, SITES.pumpkins, SITES.garden, SITES.greenhouses, SITES.changingW, SITES.changingE, SITES.tomb, SITES.gates, SITES.willow, SITES.station, SITES.shack]) {
     if (Math.hypot(x - s.x, z - s.z) < 30 + margin) return true;
   }
-  return false;
+  // Hogsmeade's high street.
+  return boxDist(x, z, SITES.hogsmeade.x, SITES.hogsmeade.z, 42 + margin, 122 + margin) === 0;
 }

@@ -397,13 +397,18 @@ export function buildGrounds({ detail = 1 } = {}) {
   {
     B.prov = PROV.interpreted;
     const s = SITES.hogsmeade;
-    for (let k = 0; k < 46; k++) {
+    const lots = [];
+    for (let k = 0, tries = 0; k < 46 && tries < 400; tries++) {
       const along = (rand() - 0.5) * 220;
       const off = (rand() < 0.5 ? -1 : 1) * (9 + rand() * 18);
       const x = s.x + off + along * 0.12, z = s.z + along;
+      const w = 6 + rand() * 4, d = 7 + rand() * 5, hh = 4.5 + rand() * 3.5;
+      // Every cottage on its own plot: no walls running through each other.
+      if (lots.some((l) => Math.abs(l.x - x) < (l.w + w) / 2 + 1.5 && Math.abs(l.z - z) < (l.d + d) / 2 + 1.5)) continue;
+      lots.push({ x, z, w, d });
+      k++;
       const y = H(x, z) - 0.3;
       B.aoBase = y;
-      const w = 6 + rand() * 4, d = 7 + rand() * 5, hh = 4.5 + rand() * 3.5;
       setTint(B, k);
       B.box(rand() < 0.3 ? 'plaster' : 'stone', x, y, z, w, hh, d, 0, { faces: 'nsewt' });
       B.gableRoof('slate', 'stone', x - w / 2, x + w / 2, z - d / 2, z + d / 2, y + hh, y + hh + w * 0.75, 'z', { overhang: 0.5 });
