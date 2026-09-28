@@ -1,0 +1,418 @@
+// The field guide. Every statement is paraphrased and carries its evidence:
+//   book        — stated in the novels (chapter codes: PS7 = Philosopher's Stone, ch. 7)
+//   author      — J.K. Rowling's annotated grounds sketch or her Wizarding World writing
+//   inferred    — deduced by combining passages (often following the Harry Potter Lexicon)
+//   interpreted — the atlas's own design where the sources are silent
+//   film        — found only in the film adaptations
+
+export const TIERS = [
+  { id: 'book', label: 'In the books', short: 'Book', note: 'Stated in the novels.' },
+  { id: 'author', label: 'Rowling’s sketch & notes', short: 'Author', note: 'Her annotated map of the grounds, or her Wizarding World writing.' },
+  { id: 'inferred', label: 'Inferred from the books', short: 'Inferred', note: 'Deduced by combining passages; not stated outright.' },
+  { id: 'interpreted', label: 'Atlas interpretation', short: 'Atlas', note: 'Our design where the sources are silent: style, shape, exact spot.' },
+  { id: 'film', label: 'Film-only', short: 'Film', note: 'Shown in the films, not the books. Noted, not built.' },
+];
+export const TIER_INDEX = Object.fromEntries(TIERS.map((t, i) => [t.id, i]));
+
+export const BOOKS = {
+  PS: 'Philosopher’s Stone', CS: 'Chamber of Secrets', PA: 'Prisoner of Azkaban', GF: 'Goblet of Fire',
+  OP: 'Order of the Phoenix', HBP: 'Half-Blood Prince', DH: 'Deathly Hallows',
+  Sketch: 'Rowling’s annotated sketch of the grounds', WW: 'Wizarding World (J.K. Rowling)', Lexicon: 'Harry Potter Lexicon',
+};
+
+const HP = 'https://www.harrypotter.com/fact-file/locations/';
+const LEX = 'https://www.hp-lexicon.org/place/hogwarts-school-of-witchcraft-and-wizardry/';
+const SKETCH = { title: 'Sketch of Hogwarts by J.K. Rowling · British Library', url: 'https://artsandculture.google.com/asset/sketch-of-hogwarts-by-j-k-rowling/6QEJy8kFibqARg' };
+
+export const CATEGORIES = [
+  { id: 'castle', label: 'The castle' },
+  { id: 'grounds', label: 'The grounds' },
+  { id: 'wilds', label: 'The wilds & beyond' },
+];
+
+export const PLACES = [
+  {
+    id: 'castle', name: 'Hogwarts Castle', cat: 'castle', anchor: 'astronomy', major: true,
+    view: { target: [0, 70, -10], yaw: -0.62, pitch: 0.2, distance: 520 },
+    tagline: 'A vast castle of many turrets and towers',
+    summary: 'The school stands on a high cliff above its lake in the Scottish Highlands. This atlas builds the castle on the plan Rowling drew for her editor: a long east–west block with round corner towers, three round towers down its middle and a narrower wing to the west.',
+    evidence: [
+      { tier: 'book', text: 'First-years see a vast castle with many turrets and towers, high on a mountain across the lake.', cite: 'PS6' },
+      { tier: 'author', text: 'Rowling’s note: the castle stands on a high cliff above the lake; the front entrance faces north.', cite: 'Sketch' },
+      { tier: 'author', text: 'Her plan shows round corner towers, three central round towers and a wing at the west end.', cite: 'Sketch' },
+      { tier: 'book', text: 'Seven floors above the ground floor are named in the stories, with dungeons below.', cite: 'PS–DH' },
+      { tier: 'interpreted', text: 'Ranges, roofs, courtyards and the Scots-Gothic detailing are our architectural reading.', cite: 'Atlas' },
+    ],
+    films: 'The film castle is a sprawling, asymmetrical model with bridges, a clock tower and a viaduct. None of those appear on Rowling’s plan.',
+    sources: [SKETCH, { title: 'Hogwarts · Wizarding World', url: HP + 'hogwarts' }],
+  },
+  {
+    id: 'entrance', name: 'The Oak Front Doors', cat: 'castle', anchor: 'doors',
+    view: { target: [0, 52, -82], yaw: 0.08, pitch: 0.12, distance: 70 },
+    tagline: 'Stone steps up to the great doors',
+    summary: 'Carriages and walkers arrive on the north side. A flight of stone steps rises to huge oak front doors, which open into the flagged Entrance Hall and its marble staircase.',
+    evidence: [
+      { tier: 'book', text: 'A flight of stone steps leads up to a huge oak front door.', cite: 'PS6' },
+      { tier: 'book', text: 'The Entrance Hall has a flagged stone floor, flaming torches and a magnificent marble staircase.', cite: 'PS7' },
+      { tier: 'author', text: 'The front entrance is on the north side; a forecourt with steps is drawn at the head of the drive.', cite: 'Sketch' },
+      { tier: 'interpreted', text: 'The gatehouse, portal mouldings and turrets are our design.', cite: 'Atlas' },
+    ],
+    films: 'In the films the approach runs over a long stone viaduct into a courtyard.',
+    sources: [SKETCH, { title: 'Ground floor · Lexicon', url: LEX + 'hogwarts-ground-floor/' }],
+    walk: [0, -104, 0],
+  },
+  {
+    id: 'hall', name: 'The Great Hall', cat: 'castle', anchor: 'hall', major: true,
+    view: { target: [-61, 70, -61], yaw: -0.35, pitch: 0.33, distance: 150 },
+    tagline: 'Candles, four long tables and an enchanted ceiling',
+    summary: 'The school’s dining and ceremonial hall lies through doors to the right as you cross the Entrance Hall, which here puts it on the west side. The kitchens are directly beneath it.',
+    evidence: [
+      { tier: 'book', text: 'Doors to the right of the Entrance Hall lead into the Great Hall.', cite: 'PS7' },
+      { tier: 'book', text: 'Four long house tables, a staff table at the top, candles floating in mid-air and a ceiling bewitched to look like the sky.', cite: 'PS7' },
+      { tier: 'book', text: 'The kitchens below mirror it, with four tables set exactly beneath the house tables.', cite: 'GF21' },
+      { tier: 'book', text: 'A small chamber lies behind the staff table.', cite: 'GF17' },
+      { tier: 'interpreted', text: 'Its buttresses, pinnacles, roof lantern and great west window are our design.', cite: 'Atlas' },
+    ],
+    story: 'The final duel between Harry and Voldemort takes place in the Great Hall in the novel, not in a courtyard as in the film.',
+    storyCite: 'DH36',
+    sources: [{ title: 'The Great Hall · Wizarding World', url: HP + 'the-great-hall' }],
+  },
+  {
+    id: 'astronomy', name: 'Astronomy Tower', cat: 'castle', anchor: 'astronomy', major: true,
+    view: { target: [0, 150, 0], yaw: 0.9, pitch: 0.12, distance: 150 },
+    tagline: 'The tallest tower, open to the sky',
+    summary: 'Astronomy is taught at midnight at the top of the school’s tallest tower. The atlas identifies it with the largest of the three central towers on Rowling’s plan and gives it an open, battlemented platform.',
+    evidence: [
+      { tier: 'book', text: 'The Astronomy Tower is the tallest tower in the school.', cite: 'PS14' },
+      { tier: 'book', text: 'Its summit is open, with ramparts, and is reached by a spiral staircase.', cite: 'HBP27' },
+      { tier: 'inferred', text: 'Placing it on the plan’s large central tower is our inference.', cite: 'Sketch' },
+      { tier: 'interpreted', text: 'The stair turret, gallery and telescopes are our design.', cite: 'Atlas' },
+    ],
+    story: 'Dumbledore dies on the Astronomy Tower in the chapter titled “The Lightning-Struck Tower”.',
+    storyCite: 'HBP27',
+    sources: [{ title: 'The Astronomy Tower · Wizarding World', url: HP + 'the-astronomy-tower' }],
+  },
+  {
+    id: 'westtower', name: 'The West Tower & Owlery', cat: 'castle', anchor: 'owlery', major: true,
+    view: { target: [-142, 105, -2], yaw: -1.25, pitch: 0.15, distance: 150 },
+    tagline: 'Where every owl in the school roosts',
+    summary: 'The Owlery occupies the top of the West Tower: a circular-windowed room full of straw and birds. Rowling’s plan has a distinct wing at the castle’s west end, and the atlas reads that wing as the West Tower.',
+    evidence: [
+      { tier: 'book', text: 'The Owlery is at the top of the West Tower.', cite: 'GF15' },
+      { tier: 'book', text: 'Its windows have no glass, so the owls can come and go.', cite: 'GF15' },
+      { tier: 'book', text: 'Flitwick’s office is on the seventh floor of the West Tower.', cite: 'PA21' },
+      { tier: 'author', text: 'A separate wing is drawn at the castle’s west end.', cite: 'Sketch' },
+      { tier: 'interpreted', text: 'The open arcade and hipped roof are our design.', cite: 'Atlas' },
+    ],
+    films: 'From Prisoner of Azkaban on, the films show the Owlery as a separate tower on a rocky hill.',
+    sources: [{ title: 'Owlery · Wizarding World', url: HP + 'owlery' }, { title: 'West Tower · Lexicon', url: LEX + 'west-tower/' }],
+  },
+  {
+    id: 'flitwick', name: 'The Thirteenth Window', cat: 'castle', anchor: 'flitwick',
+    view: { target: [-161, 80, -8], yaw: -1.62, pitch: 0.05, distance: 60 },
+    tagline: 'Seventh floor, thirteenth from the right',
+    summary: 'Hermione’s directions for rescuing Sirius give one of the most precise locations in the books. The atlas counts the windows on the West Tower’s outer face and lights that one.',
+    evidence: [
+      { tier: 'book', text: 'Sirius is held in Flitwick’s office on the seventh floor, at the thirteenth window from the right of the West Tower.', cite: 'PA21' },
+      { tier: 'interpreted', text: 'Which face of the tower, and the window spacing, are our reading.', cite: 'Atlas' },
+    ],
+    story: 'Harry and Hermione fly Buckbeak up to this window to free Sirius.',
+    storyCite: 'PA21',
+    sources: [{ title: 'Seventh floor · Lexicon', url: LEX + 'hogwarts-seventh-floor/' }],
+  },
+  {
+    id: 'gryffindor', name: 'Gryffindor Tower', cat: 'castle', anchor: 'gryffindor',
+    view: { target: [117, 120, -66], yaw: 0.2, pitch: 0.18, distance: 190 },
+    tagline: 'Through the portrait of the Fat Lady',
+    summary: 'The Gryffindor common room is a round room reached through a portrait hole, with dormitories up spiral stairs. Its windows look over the grounds toward Hagrid’s hut, so the atlas places it in the north-east corner tower.',
+    evidence: [
+      { tier: 'book', text: 'A round common room behind the Fat Lady’s portrait, with dormitories at the top of spiral staircases.', cite: 'PS7' },
+      { tier: 'inferred', text: 'The entrance is on the seventh floor.', cite: 'Lexicon' },
+      { tier: 'inferred', text: 'Views of Hagrid’s hut suggest a north-east tower.', cite: 'PA, OP' },
+    ],
+    sources: [{ title: 'Gryffindor Tower · Lexicon', url: LEX + 'gryffindor-tower/' }],
+  },
+  {
+    id: 'ravenclaw', name: 'Ravenclaw Tower', cat: 'castle', anchor: 'ravenclaw',
+    view: { target: [-117, 115, 66], yaw: -0.4, pitch: 0.15, distance: 190 },
+    tagline: 'A riddle instead of a password',
+    summary: 'A tall tower on the west side of the castle holds Ravenclaw’s airy, circular common room, with arched windows and a star-painted dome. The door has an eagle knocker that asks a question.',
+    evidence: [
+      { tier: 'book', text: 'Circular room, arched windows, blue and bronze silks, a ceiling painted with stars; an eagle knocker asks riddles.', cite: 'DH29' },
+      { tier: 'author', text: 'The tower stands on the west side of the castle.', cite: 'WW' },
+      { tier: 'inferred', text: 'Placed in the south-west corner tower, with views of the mountains over the lake.', cite: 'Atlas' },
+    ],
+    sources: [{ title: 'Ravenclaw Tower · Lexicon', url: LEX + 'ravenclaw-tower/' }],
+  },
+  {
+    id: 'north', name: 'North Tower', cat: 'castle', anchor: 'north',
+    view: { target: [-117, 110, -66], yaw: -0.9, pitch: 0.16, distance: 180 },
+    tagline: 'Up the ladder to Divination',
+    summary: 'Professor Trelawney teaches Divination at the top of the North Tower, in a stuffy room entered through a trapdoor by a silver ladder.',
+    evidence: [
+      { tier: 'book', text: 'Divination is taught at the top of the North Tower, through a trapdoor reached by a silver ladder.', cite: 'PA6' },
+      { tier: 'inferred', text: 'Assigned to the plan’s north-west corner tower.', cite: 'Atlas' },
+    ],
+    sources: [{ title: 'North Tower · Lexicon', url: LEX + 'north-tower/' }],
+  },
+  {
+    id: 'headmaster', name: 'Headmaster’s Tower', cat: 'castle', anchor: 'headmaster',
+    view: { target: [77, 110, 0], yaw: 0.5, pitch: 0.2, distance: 170 },
+    tagline: 'Behind the stone gargoyle',
+    summary: 'The head’s office is a circular room at the top of a moving spiral staircase hidden behind a gargoyle. The books never say which tower it is in, so this placement is ours.',
+    evidence: [
+      { tier: 'book', text: 'A circular office reached by a moving spiral staircase behind a stone gargoyle.', cite: 'CS11' },
+      { tier: 'interpreted', text: 'Its tower, the east central tower on the plan, is our choice.', cite: 'Atlas' },
+    ],
+    sources: [],
+  },
+  {
+    id: 'courtyard', name: 'The Courtyard', cat: 'castle', anchor: 'courtyard',
+    view: { target: [52, 55, -28], yaw: 0.7, pitch: 0.55, distance: 110 },
+    tagline: 'Between lessons, out of the wind',
+    summary: 'Students gather in a courtyard between classes. The books do not fix its place or shape; the atlas gives the north-east court an arcaded walk and a well-head.',
+    evidence: [
+      { tier: 'book', text: 'Students spend breaks in a courtyard within the castle.', cite: 'PA, GF' },
+      { tier: 'interpreted', text: 'The cloister, its arches and the well are our design.', cite: 'Atlas' },
+    ],
+    walk: [52, -30, 1.2],
+    sources: [],
+  },
+  {
+    id: 'lake', name: 'The Great Lake', cat: 'grounds', anchor: [0, 6, 380], major: true,
+    view: { target: [0, 40, 150], yaw: 0.1, pitch: 0.14, distance: 600 },
+    tagline: 'Deep, dark and inhabited',
+    summary: 'The castle’s cliff drops straight into a wide, deep lake. Merpeople, grindylows and a giant squid live in it. Students arriving by train come round it in carriages, while first-years cross it by boat.',
+    evidence: [
+      { tier: 'author', text: 'The castle stands on a high cliff above the lake; the station is on the far side.', cite: 'Sketch' },
+      { tier: 'author', text: 'A giant squid is drawn in the lake.', cite: 'Sketch' },
+      { tier: 'book', text: 'The second task of the Triwizard Tournament takes place under its surface.', cite: 'GF26' },
+      { tier: 'interpreted', text: 'The shoreline and the peaty colour of the water are ours.', cite: 'Atlas' },
+    ],
+    sources: [{ title: 'The Great Lake · Wizarding World', url: HP + 'the-great-lake' }],
+  },
+  {
+    id: 'harbour', name: 'The Underground Harbour', cat: 'grounds', anchor: 'harbour',
+    view: { target: [26, 8, 88], yaw: 0.25, pitch: 0.08, distance: 70 },
+    tagline: 'Through the curtain of ivy',
+    summary: 'The first-years’ boats glide through a curtain of ivy hiding a wide opening in the cliff, along a dark tunnel beneath the castle to an underground harbour. From there a passage in the rock climbs to the grass beside the castle.',
+    evidence: [
+      { tier: 'book', text: 'Ivy hides an opening in the cliff face; a tunnel leads under the castle to an underground harbour.', cite: 'PS6' },
+      { tier: 'book', text: 'A passage through the rock brings them out on damp grass in the castle’s shadow, below the stone steps.', cite: 'PS6' },
+      { tier: 'interpreted', text: 'The exact spot on the cliff is ours.', cite: 'Atlas' },
+    ],
+    films: 'The films add a boathouse at the foot of a long flight of stairs.',
+    sources: [],
+  },
+  {
+    id: 'drive', name: 'The Drive & Winged-boar Gates', cat: 'grounds', anchor: 'gates',
+    view: { target: [0, 45, -300], yaw: 3.05, pitch: 0.2, distance: 220 },
+    tagline: 'An avenue of trees, north to Hogsmeade',
+    summary: 'Rowling’s sketch shows a straight drive lined with trees running north from the front doors to the Hogsmeade road. At its end the carriages pass through wrought-iron gates flanked by stone columns topped with winged boars.',
+    evidence: [
+      { tier: 'author', text: 'A straight, tree-lined drive leads north from the castle, marked “to Hogsmeade”.', cite: 'Sketch' },
+      { tier: 'author', text: 'Carriages from the station go round the lake to the front entrance on the north side.', cite: 'Sketch' },
+      { tier: 'book', text: 'Magnificent wrought-iron gates, flanked by stone columns topped with winged boars.', cite: 'PA5' },
+      { tier: 'interpreted', text: 'The lamps along the drive are ours.', cite: 'Atlas' },
+    ],
+    walk: [0, -380, 0],
+    sources: [SKETCH],
+  },
+  {
+    id: 'quidditch', name: 'Quidditch Pitch', cat: 'grounds', anchor: 'hoops', major: true,
+    view: { target: [-130, 40, -258], yaw: -0.6, pitch: 0.42, distance: 260 },
+    tagline: 'Three hoops at each end, fifty feet high',
+    summary: 'The pitch lies north-west of the castle, its long axis running north–south, with changing rooms on either side. The atlas uses the rulebook’s dimensions: an oval 500 feet long and 180 feet wide.',
+    evidence: [
+      { tier: 'author', text: 'The stadium is north-west of the castle, with seats all round, three tall hooped poles at each end and changing rooms to east and west.', cite: 'Sketch' },
+      { tier: 'book', text: 'Hundreds of seats are raised in stands; the hoops are golden poles fifty feet high.', cite: 'PS10' },
+      { tier: 'book', text: 'Pitch dimensions from Quidditch Through the Ages: 500 × 180 feet.', cite: 'QTTA' },
+      { tier: 'interpreted', text: 'House-coloured canopies on the stands are ours.', cite: 'Atlas' },
+    ],
+    story: 'Harry catches his first Snitch in his mouth. In his fourth year the pitch is grown into a hedge maze for the third task.',
+    storyCite: 'PS11, GF31',
+    sources: [{ title: 'Quidditch pitch · Wizarding World', url: HP + 'quidditch-pitch' }],
+  },
+  {
+    id: 'flying', name: 'The Flying Lawn', cat: 'grounds', anchor: [-225, 50, -58],
+    view: { target: [-225, 40, -58], yaw: -0.2, pitch: 0.5, distance: 160 },
+    tagline: '“Up!” is only the beginning',
+    summary: 'Madam Hooch’s first flying lesson takes place on a smooth, flat lawn on the opposite side of the grounds from the forest, which puts it to the west of the castle.',
+    evidence: [
+      { tier: 'book', text: 'A smooth, flat lawn on the opposite side of the grounds to the forest.', cite: 'PS9' },
+      { tier: 'inferred', text: 'With the forest to the east, the lawn lies to the west.', cite: 'Sketch' },
+    ],
+    story: 'Neville breaks his wrist; Harry catches the Remembrall and is made Seeker.',
+    storyCite: 'PS9',
+    walk: [-225, -58, 1.2],
+    sources: [],
+  },
+  {
+    id: 'greenhouses', name: 'Herbology Greenhouses', cat: 'grounds', anchor: 'greenhouses', major: true,
+    view: { target: [245, 50, 40], yaw: 0.6, pitch: 0.35, distance: 120 },
+    tagline: 'Something is always growing',
+    summary: 'Professor Sprout’s greenhouses stand outside the castle, drawn by Rowling to the south-east near the lake, beside a vegetable garden. First-years work in Greenhouse One; Greenhouse Three holds the more dangerous plants.',
+    evidence: [
+      { tier: 'author', text: 'Greenhouses “for magical plants” lie east of the castle by the lake, with a vegetable garden beside them.', cite: 'Sketch' },
+      { tier: 'book', text: 'Herbology is taught in greenhouses behind the castle; Greenhouse Three holds more interesting plants.', cite: 'PS8, CS6' },
+      { tier: 'interpreted', text: 'The number and form of the glasshouses are ours.', cite: 'Atlas' },
+    ],
+    walk: [230, 20, 0.9],
+    sources: [{ title: 'The Greenhouses · Wizarding World', url: HP + 'the-greenhouses' }],
+  },
+  {
+    id: 'garden', name: 'Vegetable Garden', cat: 'grounds', anchor: 'garden',
+    view: { target: [186, 50, -36], yaw: 0.9, pitch: 0.5, distance: 90 },
+    tagline: 'Drawn by Rowling, rarely mentioned',
+    summary: 'A walled vegetable garden sits against the castle’s east side on Rowling’s sketch, between the castle and the greenhouses.',
+    evidence: [
+      { tier: 'author', text: 'A vegetable garden is drawn east of the castle.', cite: 'Sketch' },
+      { tier: 'interpreted', text: 'The walls and planting rows are ours.', cite: 'Atlas' },
+    ],
+    sources: [SKETCH],
+  },
+  {
+    id: 'hagrid', name: 'Hagrid’s Hut', cat: 'grounds', anchor: 'hagrid', major: true,
+    view: { target: [112, 42, -268], yaw: 2.6, pitch: 0.22, distance: 60 },
+    tagline: 'A crossbow and galoshes by the door',
+    summary: 'The gamekeeper lives in a small wooden house on the edge of the Forbidden Forest, north-east of the castle. The atlas includes the crossbow and galoshes by the door described on Harry’s first visit.',
+    evidence: [
+      { tier: 'book', text: 'A small wooden house on the edge of the forest, a crossbow and a pair of galoshes outside the front door.', cite: 'PS8' },
+      { tier: 'author', text: 'The gamekeeper’s cabin is north-east of the castle at the forest’s edge, with the pumpkin patch beside it.', cite: 'Sketch' },
+      { tier: 'interpreted', text: 'Its size, roof and fence are ours.', cite: 'Atlas' },
+    ],
+    films: 'The films make it a round stone hut with a thatched roof.',
+    story: 'Norbert the dragon hatches in the hut’s fire.',
+    storyCite: 'PS14',
+    walk: [100, -250, 2.6],
+    sources: [{ title: 'Hagrid’s hut · Wizarding World', url: HP + 'hagrids-hut' }],
+  },
+  {
+    id: 'pumpkins', name: 'The Pumpkin Patch', cat: 'grounds', anchor: 'pumpkins',
+    view: { target: [80, 38, -292], yaw: 2.3, pitch: 0.4, distance: 70 },
+    tagline: 'Some of them the size of garden sheds',
+    summary: 'Hagrid grows enormous pumpkins beside his cabin, helped along by a little magic, in time for the Halloween feast.',
+    evidence: [
+      { tier: 'author', text: 'A pumpkin patch is drawn beside the gamekeeper’s cabin.', cite: 'Sketch' },
+      { tier: 'book', text: 'Hagrid’s pumpkins grow to the size of garden sheds.', cite: 'CS7' },
+    ],
+    story: 'Buckbeak waits tethered by the pumpkin patch in Harry’s third year.',
+    storyCite: 'PA16, PA21',
+    sources: [],
+  },
+  {
+    id: 'willow', name: 'The Whomping Willow', cat: 'grounds', anchor: [161, 64, -170], major: true,
+    view: { target: [161, 55, -170], yaw: 2.1, pitch: 0.2, distance: 70 },
+    tagline: 'It must stand out',
+    summary: 'A violent willow guards the entrance to a tunnel that runs to the Shrieking Shack. Rowling’s note on her sketch: other trees can be dotted about the lawns, but the Whomping Willow must stand out. Get close and it grows restless.',
+    evidence: [
+      { tier: 'author', text: 'The Whomping Willow is drawn alone on the lawns between the castle and the forest; her note says it must stand out.', cite: 'Sketch' },
+      { tier: 'book', text: 'A secret passage beneath its roots leads to the Shrieking Shack; pressing a knot on the trunk freezes it.', cite: 'PA17–18' },
+      { tier: 'book', text: 'Planted the year Remus Lupin started school.', cite: 'PA18' },
+    ],
+    story: 'Harry and Ron crash the flying Ford Anglia into it in their second year.',
+    storyCite: 'CS5',
+    sources: [SKETCH],
+  },
+  {
+    id: 'beech', name: 'The Beech Tree by the Lake', cat: 'grounds', anchor: [-238, 52, 78],
+    view: { target: [-238, 30, 78], yaw: -2.2, pitch: 0.2, distance: 80 },
+    tagline: 'Shade on an exam afternoon',
+    summary: 'Students sit under a beech tree at the edge of the lake after exams. The books don’t fix its position, so the atlas puts it on the western lawns within sight of the castle.',
+    evidence: [
+      { tier: 'book', text: 'A beech tree stands on the edge of the lake.', cite: 'OP28' },
+      { tier: 'interpreted', text: 'Its position is ours.', cite: 'Atlas' },
+    ],
+    story: 'Snape’s worst memory unfolds beneath this tree.',
+    storyCite: 'OP28',
+    walk: [-230, 64, -1.9],
+    sources: [],
+  },
+  {
+    id: 'tomb', name: 'The White Tomb', cat: 'grounds', anchor: 'tomb',
+    view: { target: [318, 30, 104], yaw: 0.4, pitch: 0.18, distance: 70 },
+    tagline: 'White marble by the water',
+    summary: 'A white marble tomb stands beside the lake. It belongs to the end of the story; open the story note only if you don’t mind spoilers.',
+    evidence: [
+      { tier: 'book', text: 'A white marble tomb beside the lake.', cite: 'HBP30' },
+      { tier: 'interpreted', text: 'Its exact position and shape are ours.', cite: 'Atlas' },
+    ],
+    story: 'Dumbledore is laid to rest here. Voldemort later opens the tomb to take the Elder Wand.',
+    storyCite: 'HBP30, DH24',
+    sources: [],
+  },
+  {
+    id: 'forest', name: 'The Forbidden Forest', cat: 'wilds', anchor: [320, 110, -300], major: true,
+    view: { target: [300, 90, -330], yaw: 2.4, pitch: 0.35, distance: 520 },
+    tagline: 'Massive, and out of bounds',
+    summary: 'Rowling’s note calls the forest massive, stretching out of sight. It borders the grounds to the north-east and east. Centaurs, unicorns, thestrals and Acromantulas live in it.',
+    evidence: [
+      { tier: 'author', text: 'The Forbidden Forest is massive and stretches out of sight, north-east of the castle.', cite: 'Sketch' },
+      { tier: 'book', text: 'Students are forbidden to enter it; unicorns, centaurs and giant spiders live inside.', cite: 'PS7, PS15, CS15' },
+      { tier: 'interpreted', text: 'Tree species and the forest’s inner geography are ours.', cite: 'Atlas' },
+    ],
+    story: 'Harry walks into the forest to meet Voldemort in The Forest Again.',
+    storyCite: 'DH34',
+    sources: [{ title: 'The Forbidden Forest · Wizarding World', url: HP + 'the-forbidden-forest' }],
+  },
+  {
+    id: 'clearing', name: 'A Forest Clearing', cat: 'wilds', anchor: [350, 70, -430],
+    view: { target: [350, 60, -430], yaw: 2.9, pitch: 0.35, distance: 110 },
+    tagline: 'Listen before taking another step',
+    summary: 'An open glade deep among the trees. The novels mention several clearings without fixing any of them, so this one is purely an atlas viewpoint.',
+    evidence: [
+      { tier: 'book', text: 'Clearings in the forest appear throughout the series.', cite: 'PS15, OP30, DH34' },
+      { tier: 'interpreted', text: 'This clearing’s location is ours.', cite: 'Atlas' },
+    ],
+    walk: [350, -430, 2],
+    sources: [],
+  },
+  {
+    id: 'station', name: 'Hogsmeade Station', cat: 'wilds', anchor: 'station',
+    view: { target: [150, 20, 1405], yaw: 0.2, pitch: 0.2, distance: 260 },
+    tagline: 'The far side of the lake',
+    summary: 'The Hogwarts Express stops at Hogsmeade station. Rowling’s note puts the station on the far side of the lake from the castle, with the carriage road going right round the water.',
+    evidence: [
+      { tier: 'author', text: 'The station is on the other side of the lake; carriages go round the lake to the north entrance.', cite: 'Sketch' },
+      { tier: 'book', text: 'First-years leave the train and follow Hagrid down to the water’s edge.', cite: 'PS6' },
+      { tier: 'interpreted', text: 'The station building and the route of the road are ours.', cite: 'Atlas' },
+    ],
+    sources: [SKETCH],
+  },
+  {
+    id: 'hogsmeade', name: 'Hogsmeade Village', cat: 'wilds', anchor: 'hogsmeade',
+    view: { target: [-60, 80, -1150], yaw: 2.9, pitch: 0.3, distance: 380 },
+    tagline: 'Britain’s only all-wizarding village',
+    summary: 'The village lies beyond the gates, at the end of the drive Rowling labelled “to Hogsmeade”. Third-years and above may visit on certain weekends.',
+    evidence: [
+      { tier: 'author', text: 'The drive runs north “to Hogsmeade”.', cite: 'Sketch' },
+      { tier: 'book', text: 'Students from third year up may visit with a signed permission form.', cite: 'PA1, PA8' },
+      { tier: 'interpreted', text: 'The village’s layout and distance are ours.', cite: 'Atlas' },
+    ],
+    sources: [{ title: 'Hogsmeade · Wizarding World', url: HP + 'hogsmeade' }],
+  },
+  {
+    id: 'shack', name: 'The Shrieking Shack', cat: 'wilds', anchor: 'shack',
+    view: { target: [230, 70, -1060], yaw: 2.5, pitch: 0.25, distance: 160 },
+    tagline: 'The most haunted building in Britain',
+    summary: 'A boarded-up house stands on a slope above Hogsmeade. The tunnel under the Whomping Willow ends here.',
+    evidence: [
+      { tier: 'book', text: 'The tunnel from beneath the Whomping Willow ends at the Shrieking Shack.', cite: 'PA17' },
+      { tier: 'book', text: 'It stands on a slope a little above the village.', cite: 'GF27' },
+      { tier: 'interpreted', text: 'Its position is ours.', cite: 'Atlas' },
+    ],
+    sources: [],
+  },
+];
+
+export const TOUR = [
+  { id: 'castle', dwell: 7 },
+  { id: 'drive', dwell: 7 },
+  { id: 'entrance', dwell: 6 },
+  { id: 'hall', dwell: 7 },
+  { id: 'astronomy', dwell: 7 },
+  { id: 'quidditch', dwell: 7 },
+  { id: 'hagrid', dwell: 7 },
+  { id: 'willow', dwell: 6 },
+  { id: 'harbour', dwell: 7 },
+];

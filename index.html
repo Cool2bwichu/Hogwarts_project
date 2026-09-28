@@ -1,0 +1,362 @@
+<title>Hogwarts Living Atlas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Explore Hogwarts and its grounds in 3D, laid out from J.K. Rowling's own sketch and the novels, with the evidence behind every building.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Spectral:ital,wght@0,400;0,500;1,400&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --ink: #0b1215;
+    --ink-2: #111b20;
+    --glass: rgba(11, 18, 21, 0.74);
+    --glass-strong: rgba(11, 18, 21, 0.9);
+    --line: rgba(233, 214, 170, 0.16);
+    --line-strong: rgba(233, 214, 170, 0.32);
+    --parchment: #efe6d2;
+    --parchment-2: #cfc6b1;
+    --muted: #9d9784;
+    --gilt: #d9b25f;
+    --gilt-bright: #f0cf86;
+    --t-book: #d9b25f;
+    --t-author: #5fb3a3;
+    --t-inferred: #a08fd8;
+    --t-interpreted: #8d8b84;
+    --t-film: #d0806f;
+    --display: 'IM Fell English', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    --display-sc: 'IM Fell English SC', 'IM Fell English', Georgia, serif;
+    --text: 'Spectral', 'Iowan Old Style', Georgia, serif;
+    --ui: 'Alegreya Sans', 'Gill Sans', 'Trebuchet MS', system-ui, sans-serif;
+    --r: 10px;
+    --gap: 14px;
+    --edge: max(16px, env(safe-area-inset-left, 0px));
+    --top: max(14px, env(safe-area-inset-top, 0px));
+    --bottom: max(14px, env(safe-area-inset-bottom, 0px));
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; background: var(--ink); color: var(--parchment); overflow: hidden; }
+  body { font: 15px/1.45 var(--ui); -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  button:focus-visible, input:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--gilt); outline-offset: 2px; border-radius: 6px; }
+  a { color: var(--gilt-bright); text-underline-offset: 3px; }
+  svg { display: block; }
+  [hidden] { display: none !important; }
+
+  #stage { position: fixed; inset: 0; }
+  #stage canvas { display: block; touch-action: none; outline: none; }
+  body.mode-map #stage { visibility: hidden; }
+
+  /* ── Glass panels ── */
+  .panel {
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(16px) saturate(1.25);
+    backdrop-filter: blur(16px) saturate(1.25);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 244, 214, 0.05);
+  }
+  .btn { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--line); background: rgba(255, 244, 214, 0.03); transition: background 160ms, border-color 160ms, color 160ms; white-space: nowrap; }
+  .btn:hover { background: rgba(255, 244, 214, 0.08); border-color: var(--line-strong); }
+  .btn.primary { background: var(--gilt); color: #1b1408; border-color: var(--gilt); font-weight: 700; }
+  .btn.primary:hover { background: var(--gilt-bright); }
+  .icon-btn { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 8px; transition: background 160ms, color 160ms; }
+  .icon-btn:hover { background: rgba(255, 244, 214, 0.08); }
+  .icon-btn[aria-pressed="true"] { color: var(--gilt-bright); background: rgba(217, 178, 95, 0.14); }
+  .eyebrow { font: 700 11px/1 var(--ui); letter-spacing: 0.14em; text-transform: uppercase; color: var(--gilt); }
+
+  /* ── Top bar ── */
+  .top { position: fixed; top: var(--top); left: var(--edge); right: var(--edge); display: flex; justify-content: space-between; align-items: flex-start; gap: var(--gap); pointer-events: none; z-index: 20; }
+  .top > * { pointer-events: auto; }
+  .brand { display: flex; align-items: center; gap: 12px; padding: 6px 12px 6px 6px; border-radius: 10px; text-align: left; }
+  .brand:hover .crest { border-color: var(--gilt); }
+  .crest { width: 44px; height: 44px; border: 1px solid var(--line-strong); border-radius: 50%; display: grid; place-items: center; color: var(--gilt); background: var(--glass); transition: border-color 200ms; }
+  .brand-name { display: block; font: 400 25px/1 var(--display-sc); letter-spacing: 0.08em; text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6); }
+  .brand-sub { display: block; font: italic 400 14px/1.2 var(--display); color: var(--parchment-2); text-shadow: 0 1px 10px rgba(0, 0, 0, 0.7); margin-top: 3px; }
+  .top-actions { display: flex; gap: 8px; align-items: center; }
+  .atmo { display: flex; align-items: center; gap: 11px; padding: 7px 14px 7px 11px; text-align: left; min-width: 196px; }
+  .atmo strong { display: block; font: 500 15px/1.1 var(--ui); }
+  .atmo small { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .atmo .glyph { color: var(--gilt); }
+
+  /* ── Rail ── */
+  .rail { position: fixed; right: var(--edge); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; padding: 4px; gap: 2px; z-index: 18; }
+  .rail hr { border: 0; height: 1px; background: var(--line); margin: 3px 6px; }
+
+  /* ── Field guide ── */
+  .guide-toggle { position: fixed; top: calc(var(--top) + 70px); left: var(--edge); z-index: 18; display: flex; align-items: center; gap: 10px; height: 42px; padding: 0 14px; }
+  .guide-toggle .count { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 20px; padding: 1px 8px; font-variant-numeric: tabular-nums; }
+  .guide { position: fixed; top: calc(var(--top) + 70px); left: var(--edge); bottom: calc(var(--bottom) + 76px); width: 330px; z-index: 19; display: flex; flex-direction: column; overflow: hidden; }
+  .guide-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 10px 6px 18px; }
+  .guide-head h2 { margin: 0; font: 400 24px/1 var(--display); }
+  .search { margin: 6px 14px 10px; display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: rgba(0, 0, 0, 0.18); }
+  .search input { flex: 1; background: none; border: 0; color: inherit; font: inherit; outline: none; min-width: 0; }
+  .search input::placeholder { color: var(--muted); }
+  .filters { display: flex; gap: 6px; padding: 0 14px 10px; flex-wrap: wrap; }
+  .chip { height: 30px; padding: 0 12px; border-radius: 20px; border: 1px solid var(--line); font-size: 13.5px; color: var(--parchment-2); }
+  .chip[aria-pressed="true"] { background: rgba(217, 178, 95, 0.16); border-color: rgba(217, 178, 95, 0.5); color: var(--gilt-bright); }
+  .guide-list { list-style: none; margin: 0; padding: 0 8px 12px; overflow-y: auto; flex: 1; scrollbar-width: thin; }
+  .guide-list h3 { font: 700 11px/1 var(--ui); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin: 14px 10px 6px; }
+  .place-item { width: 100%; display: grid; grid-template-columns: 26px 1fr auto; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; text-align: left; }
+  .place-item:hover, .place-item[aria-current="true"] { background: rgba(255, 244, 214, 0.07); }
+  .place-item .num { font: italic 14px/1 var(--display); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .place-item .nm { font: 500 15px/1.2 var(--ui); }
+  .place-item .tg { display: block; font: italic 13px/1.3 var(--text); color: var(--muted); margin-top: 2px; }
+  .tier-dots { display: flex; gap: 3px; }
+  .tier-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  /* ── Place card ── */
+  .card { position: fixed; top: calc(var(--top) + 70px); right: calc(var(--edge) + 62px); bottom: calc(var(--bottom) + 76px); width: 380px; z-index: 21; display: flex; flex-direction: column; overflow: hidden; animation: cardIn 280ms ease; }
+  @keyframes cardIn { from { opacity: 0; transform: translateX(14px); } }
+  .card-scroll { overflow-y: auto; padding: 18px 20px 20px; scrollbar-width: thin; }
+  .card-top { display: flex; justify-content: space-between; align-items: center; }
+  .card h2 { margin: 10px 0 4px; font: 400 32px/1.05 var(--display); text-wrap: balance; }
+  .card .tagline { margin: 0 0 14px; font: italic 16px/1.35 var(--text); color: var(--parchment-2); }
+  .card .summary { font: 400 15.5px/1.6 var(--text); color: var(--parchment); margin: 0 0 16px; }
+  .card-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .section-title { display: flex; align-items: baseline; justify-content: space-between; margin: 18px 0 8px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .section-title h3 { margin: 0; font: 400 19px/1.2 var(--display); }
+  .section-title small { color: var(--muted); font-size: 12.5px; }
+  .evidence { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .evidence li { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; }
+  .evidence p { margin: 0; font: 14.5px/1.5 var(--text); }
+  .evidence cite { font: normal 12.5px/1 var(--ui); color: var(--muted); white-space: nowrap; }
+  .tier { display: inline-flex; align-items: center; gap: 5px; height: 20px; padding: 0 7px; border-radius: 4px; font: 700 10.5px/1 var(--ui); letter-spacing: 0.08em; text-transform: uppercase; color: #13100a; margin-top: 2px; white-space: nowrap; }
+  .tier.book { background: var(--t-book); }
+  .tier.author { background: var(--t-author); }
+  .tier.inferred { background: var(--t-inferred); }
+  .tier.interpreted { background: repeating-linear-gradient(135deg, var(--t-interpreted) 0 5px, #a9a79f 5px 7px); }
+  .tier.film { background: var(--t-film); }
+  .note { margin: 0; padding: 11px 13px; border-radius: 8px; background: rgba(208, 128, 111, 0.1); border: 1px solid rgba(208, 128, 111, 0.28); font: 14px/1.5 var(--text); }
+  .note strong { font: 700 11px/1 var(--ui); letter-spacing: 0.12em; text-transform: uppercase; color: var(--t-film); display: block; margin-bottom: 6px; }
+  .story { margin: 0; }
+  .story-veil { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 8px; border: 1px dashed var(--line-strong); color: var(--parchment-2); text-align: left; }
+  .story p { font: italic 15px/1.55 var(--text); margin: 0; }
+  .sources { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 14px; }
+  .sources a::after { content: ' ↗'; font-size: 12px; }
+
+  /* ── Bottom: modes and tour ── */
+  .bottom { position: fixed; left: 50%; transform: translateX(-50%); bottom: var(--bottom); display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 20; width: min(560px, calc(100vw - 32px)); }
+  .modes { display: flex; padding: 4px; gap: 2px; }
+  .mode { display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 18px; border-radius: 7px; font-weight: 500; color: var(--parchment-2); transition: background 160ms, color 160ms; }
+  .mode:hover { color: var(--parchment); background: rgba(255, 244, 214, 0.06); }
+  .mode[aria-selected="true"] { background: var(--gilt); color: #1b1408; }
+  .tour { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px; }
+  .tour .t-text { flex: 1; min-width: 0; }
+  .tour strong { display: block; font: 400 18px/1.15 var(--display); }
+  .tour small { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .tour .play { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--gilt); color: var(--gilt-bright); display: grid; place-items: center; flex: none; }
+  .tour-live { width: 100%; padding: 14px 16px; }
+  .tour-live .eyebrow { display: flex; justify-content: space-between; }
+  .tour-live h3 { margin: 8px 0 4px; font: 400 24px/1.1 var(--display); }
+  .tour-live p { margin: 0; font: 14.5px/1.5 var(--text); color: var(--parchment-2); }
+  .tour-live .row { display: flex; align-items: center; gap: 6px; margin-top: 12px; }
+  .tour-live .bar { flex: 1; height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .tour-live .bar i { display: block; height: 100%; width: 0; background: var(--gilt); transition: width 200ms linear; }
+
+  /* ── Popovers ── */
+  .popover { position: fixed; z-index: 30; padding: 16px; width: 340px; max-width: calc(100vw - 32px); }
+  .popover h3 { margin: 0 0 10px; font: 400 19px/1.1 var(--display); }
+  .grid-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .grid-chips .chip { height: 36px; border-radius: 8px; font-size: 13.5px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .slider-row { display: flex; align-items: center; gap: 12px; margin: 14px 0 6px; }
+  .slider-row output { font-variant-numeric: tabular-nums; min-width: 44px; text-align: right; color: var(--parchment-2); }
+  input[type="range"] { flex: 1; accent-color: var(--gilt); }
+  .switch-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; gap: 12px; }
+  .switch-row span small { display: block; color: var(--muted); font-size: 12.5px; }
+  .switch { width: 42px; height: 24px; border-radius: 20px; background: rgba(255, 244, 214, 0.14); position: relative; flex: none; transition: background 160ms; }
+  .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--parchment); transition: transform 160ms; }
+  .switch[aria-checked="true"] { background: var(--gilt); }
+  .switch[aria-checked="true"]::after { transform: translateX(18px); background: #1b1408; }
+  .divider { height: 1px; background: var(--line); margin: 12px 0; }
+  .tiers-list { display: grid; gap: 6px; }
+  .tier-opt { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 10px; padding: 9px 11px; border-radius: 8px; border: 1px solid var(--line); text-align: left; }
+  .tier-opt small { grid-column: 1 / -1; color: var(--muted); font-size: 12.5px; }
+  .tier-opt[aria-checked="true"] { border-color: rgba(217, 178, 95, 0.55); background: rgba(217, 178, 95, 0.1); }
+
+  /* ── Labels ── */
+  #labels { position: fixed; inset: 0; pointer-events: none; z-index: 10; overflow: hidden; }
+  body.mode-map #labels, body.no-labels #labels { display: none; }
+  .label { position: absolute; left: 0; top: 0; pointer-events: auto; display: flex; align-items: center; gap: 7px; white-space: nowrap; padding: 5px 10px 5px 8px; border-radius: 20px; background: rgba(11, 18, 21, 0.62); border: 1px solid var(--line); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); font: 500 13.5px/1 var(--ui); color: var(--parchment); transform: translate(-50%, -100%); transition: opacity 220ms, background 160ms; will-change: transform, opacity; }
+  .label::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--dot, var(--gilt)); box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25); }
+  .label.major { font: 400 15px/1 var(--display); padding: 7px 12px 7px 10px; }
+  .label:hover { background: rgba(11, 18, 21, 0.9); border-color: var(--line-strong); }
+  .label .stem { position: absolute; left: 50%; top: 100%; width: 1px; height: 14px; background: linear-gradient(var(--line-strong), transparent); }
+  .label.hide { opacity: 0; pointer-events: none; }
+
+  /* ── Legend, hints, compass ── */
+  .legend { position: fixed; left: var(--edge); bottom: calc(var(--bottom) + 76px); width: 300px; padding: 14px; z-index: 19; }
+  .legend h3 { margin: 0 0 4px; font: 400 19px/1.1 var(--display); }
+  .legend p { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
+  .legend-row { width: 100%; display: grid; grid-template-columns: 14px 1fr; gap: 10px; align-items: center; padding: 6px 8px; border-radius: 6px; text-align: left; font-size: 14px; }
+  .legend-row:hover, .legend-row[aria-pressed="true"] { background: rgba(255, 244, 214, 0.07); }
+  .legend-row i { width: 14px; height: 14px; border-radius: 3px; }
+  .legend-row small { grid-column: 2; color: var(--muted); font-size: 12px; margin-top: -2px; }
+  .hint { position: fixed; left: var(--edge); bottom: var(--bottom); z-index: 15; font-size: 12.5px; color: var(--parchment-2); text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8); max-width: 300px; }
+  .scale { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+  .scale i { display: block; height: 6px; border: 1px solid var(--parchment-2); border-top: 0; }
+  .compass { position: fixed; right: var(--edge); bottom: var(--bottom); z-index: 18; width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; }
+  .compass svg { transition: transform 80ms linear; }
+  .opts-btn { position: fixed; right: calc(var(--edge) + 62px); bottom: var(--bottom); z-index: 18; }
+
+  /* ── Walk joystick ── */
+  .joystick { position: fixed; left: calc(var(--edge) + 10px); bottom: calc(var(--bottom) + 80px); width: 120px; height: 120px; border-radius: 50%; z-index: 19; touch-action: none; display: grid; place-items: center; }
+  .joystick .knob { width: 48px; height: 48px; border-radius: 50%; background: rgba(239, 230, 210, 0.2); border: 1px solid var(--line-strong); }
+  .updown { position: fixed; left: calc(var(--edge) + 140px); bottom: calc(var(--bottom) + 88px); display: flex; flex-direction: column; gap: 8px; z-index: 19; }
+
+  /* ── Map ── */
+  body.mode-map .rail, body.mode-map .legend { display: none; }
+  body.mode-map .brand-name { color: #3a2e21; text-shadow: none; }
+  body.mode-map .brand-sub, body.mode-map .hint { color: #5c4a35; text-shadow: none; }
+  #mapview { position: fixed; inset: 0; z-index: 5; background: #e9dcbd; }
+  #mapview canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+  .floorbar { position: fixed; top: calc(var(--top) + 70px); right: calc(var(--edge)); z-index: 21; display: flex; flex-direction: column; padding: 4px; gap: 2px; }
+  .floorbar .fl { width: 44px; height: 34px; border-radius: 6px; font: 700 14px/1 var(--ui); color: var(--parchment-2); }
+  .floorbar .fl[aria-pressed="true"] { background: var(--gilt); color: #1b1408; }
+  .floorbar .fl-label { font: 700 10px/1 var(--ui); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-align: center; padding: 6px 0 4px; }
+  .floorpanel { position: fixed; top: calc(var(--top) + 70px); right: calc(var(--edge) + 64px); width: 340px; max-height: calc(100% - var(--top) - 170px); overflow-y: auto; z-index: 21; padding: 16px 18px; }
+  .floorpanel h3 { margin: 6px 0 4px; font: 400 24px/1.1 var(--display); }
+  .floorpanel > p { margin: 0 0 12px; color: var(--muted); font-size: 13.5px; }
+  .room { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; padding: 9px 0; border-top: 1px solid var(--line); }
+  .room h4 { margin: 0; font: 500 15px/1.3 var(--ui); }
+  .room p { grid-column: 2; margin: 0; font: 13.5px/1.45 var(--text); color: var(--parchment-2); }
+  .room cite { grid-column: 2; font: normal 12px/1 var(--ui); color: var(--muted); }
+
+  /* ── Dialogs and toast ── */
+  dialog { border: 0; padding: 0; background: transparent; color: inherit; max-width: min(720px, calc(100vw - 32px)); width: 100%; }
+  dialog::backdrop { background: rgba(5, 8, 10, 0.6); }
+  .dialog-body { padding: 26px 28px 24px; max-height: calc(100vh - 80px); overflow-y: auto; }
+  .dialog-body h2 { margin: 6px 0 10px; font: 400 32px/1.05 var(--display); }
+  .dialog-body h3 { margin: 22px 0 6px; font: 400 20px/1.2 var(--display); }
+  .dialog-body p, .dialog-body li { font: 15px/1.6 var(--text); color: var(--parchment); }
+  .dialog-body ul { padding-left: 18px; }
+  .dialog-close { position: absolute; top: 14px; right: 14px; }
+  .keys { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 14px; }
+  kbd { font: 600 12px/1 var(--ui); border: 1px solid var(--line-strong); border-bottom-width: 2px; border-radius: 4px; padding: 3px 6px; background: rgba(255, 244, 214, 0.05); }
+  .postcard-img { width: 100%; border-radius: 6px; display: block; border: 1px solid var(--line); }
+  .toast { position: fixed; left: 50%; top: calc(var(--top) + 70px); transform: translate(-50%, -8px); z-index: 40; padding: 10px 16px; opacity: 0; pointer-events: none; transition: opacity 240ms, transform 240ms; font-size: 14px; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* ── Boot ── */
+  #boot { position: fixed; inset: 0; display: grid; place-items: center; z-index: 60; background: radial-gradient(120% 90% at 50% 40%, #16252b 0%, #0a1013 70%); transition: opacity 900ms ease 200ms, visibility 0s linear 1.2s; }
+  body.ready #boot { opacity: 0; visibility: hidden; }
+  .boot-card { display: grid; justify-items: center; gap: 14px; text-align: center; padding: 24px; }
+  .boot-card .crest { width: 64px; height: 64px; }
+  .boot-card h1 { font: 400 clamp(32px, 5vw, 48px)/1 var(--display-sc); letter-spacing: 0.08em; margin: 4px 0 0; }
+  .boot-card p { margin: 0; font: italic 400 16px/1.4 var(--text); color: var(--parchment-2); }
+  .boot-rule { width: 200px; height: 1px; background: var(--line); overflow: hidden; }
+  #boot-bar { height: 100%; background: var(--gilt); transform: scaleX(0); transform-origin: left; transition: transform 400ms ease; }
+  body:not(.ready) .top, body:not(.ready) .rail, body:not(.ready) .bottom, body:not(.ready) .guide-toggle { opacity: 0; }
+  .top, .rail, .bottom, .guide-toggle { transition: opacity 600ms ease 400ms; }
+
+  /* ── Compact screens ── */
+  @media (max-width: 760px) {
+    .brand-sub { display: none; }
+    .brand-name { font-size: 20px; }
+    .crest { width: 38px; height: 38px; }
+    .atmo { min-width: 0; padding: 6px 10px; }
+    .atmo small { display: none; }
+    .guide-toggle { top: auto; bottom: calc(var(--bottom) + 64px); }
+    .guide, .card, .floorpanel { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 72vh; border-radius: 14px 14px 10px 10px; }
+    .card { animation: sheetIn 280ms ease; }
+    @keyframes sheetIn { from { opacity: 0; transform: translateY(24px); } }
+    .rail { top: calc(var(--top) + 64px); transform: none; }
+    .mode { padding: 0 12px; }
+    .mode span { font-size: 14px; }
+    .hint { display: none; }
+    .legend { left: 8px; right: 8px; width: auto; bottom: calc(var(--bottom) + 64px); }
+    .opts-btn { right: calc(var(--edge) + 56px); }
+    .floorbar { top: calc(var(--top) + 64px); }
+  }
+  @media (max-width: 460px) { .mode span { display: none; } .mode { padding: 0 16px; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition-duration: 0ms !important; } }
+</style>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js" } }
+</script>
+
+<div id="stage"></div>
+<div id="labels"></div>
+<div id="mapview" hidden><canvas id="mapcanvas" aria-label="Parchment map of Hogwarts and its grounds"></canvas></div>
+
+<header class="top">
+  <button class="brand" id="btn-home" aria-label="Return to the full view of Hogwarts">
+    <span class="crest" data-icon="crest"></span>
+    <span><span class="brand-name">Hogwarts</span><span class="brand-sub">The Living Atlas</span></span>
+  </button>
+  <div class="top-actions">
+    <button class="panel atmo" id="btn-atmo" aria-haspopup="dialog" aria-expanded="false">
+      <span class="glyph" id="atmo-glyph" data-icon="sun"></span>
+      <span><strong id="atmo-name">Golden hour</strong><small id="atmo-sub">Clear · 18:27</small></span>
+    </button>
+    <button class="panel icon-btn" id="btn-info" aria-label="About the atlas and its sources" data-icon="info"></button>
+  </div>
+</header>
+
+<button class="panel guide-toggle" id="btn-guide" aria-expanded="false" aria-controls="guide"><span data-icon="book"></span> Field guide <span class="count" id="guide-count"></span></button>
+<aside class="panel guide" id="guide" hidden aria-label="Field guide">
+  <div class="guide-head"><h2>Field guide</h2><button class="icon-btn" id="guide-close" aria-label="Close field guide" data-icon="close"></button></div>
+  <label class="search"><span data-icon="search"></span><input id="guide-search" type="search" placeholder="Find a place…" autocomplete="off"></label>
+  <div class="filters" id="guide-filters" role="group" aria-label="Filter by area"></div>
+  <ol class="guide-list" id="guide-list"></ol>
+</aside>
+
+<section class="panel card" id="card" hidden aria-live="polite"></section>
+
+<nav class="panel rail" aria-label="View tools">
+  <button class="icon-btn" id="btn-overview" aria-label="Whole castle" title="Whole castle" data-icon="home"></button>
+  <button class="icon-btn" id="btn-zin" aria-label="Zoom in" title="Zoom in" data-icon="plus"></button>
+  <button class="icon-btn" id="btn-zout" aria-label="Zoom out" title="Zoom out" data-icon="minus"></button>
+  <hr>
+  <button class="icon-btn" id="btn-labels" aria-pressed="true" aria-label="Place names" title="Place names" data-icon="tag"></button>
+  <button class="icon-btn" id="btn-lens" aria-pressed="false" aria-label="Accuracy lens: colour everything by its source" title="Accuracy lens" data-icon="lens"></button>
+  <button class="icon-btn" id="btn-postcard" aria-label="Save a postcard of this view" title="Postcard" data-icon="camera"></button>
+  <button class="icon-btn" id="btn-full" aria-label="Full screen" title="Full screen" data-icon="expand"></button>
+</nav>
+
+<aside class="panel legend" id="legend" hidden aria-label="Accuracy lens legend">
+  <h3>How we know</h3>
+  <p>Each building and feature is coloured by the strongest evidence for it. Select a row to isolate it.</p>
+  <div id="legend-rows"></div>
+</aside>
+
+<div class="bottom">
+  <div class="panel tour" id="tour-card">
+    <button class="play" id="tour-start" aria-label="Start the guided flight" data-icon="play"></button>
+    <div class="t-text"><strong>A first flight over Hogwarts</strong><small id="tour-sub">Nine stops, from the front doors to the harbour</small></div>
+    <button class="icon-btn" id="tour-dismiss" aria-label="Hide the guided flight" data-icon="close"></button>
+  </div>
+  <div class="panel tour-live" id="tour-live" hidden></div>
+  <div class="panel modes" role="tablist" aria-label="How to explore">
+    <button class="mode" role="tab" data-mode="explore" aria-selected="true"><span data-icon="orbit"></span><span>Explore</span></button>
+    <button class="mode" role="tab" data-mode="walk" aria-selected="false"><span data-icon="walk"></span><span>Walk</span></button>
+    <button class="mode" role="tab" data-mode="fly" aria-selected="false"><span data-icon="fly"></span><span>Fly</span></button>
+    <button class="mode" role="tab" data-mode="map" aria-selected="false"><span data-icon="map"></span><span>Map</span></button>
+  </div>
+</div>
+
+<div class="hint" id="hint"><div class="scale" id="scale"><i id="scale-bar"></i><span id="scale-text">100 m</span></div><span id="hint-text">Drag to orbit · scroll to zoom · double-click to fly there</span></div>
+<button class="panel icon-btn opts-btn" id="btn-options" aria-label="Display and movement options" data-icon="sliders"></button>
+<button class="panel compass" id="compass" aria-label="Face north"><svg width="34" height="34" viewBox="0 0 34 34" id="compass-rose"><circle cx="17" cy="17" r="15.5" fill="none" stroke="rgba(233,214,170,.3)"/><path d="M17 4 L20.5 17 L17 15 L13.5 17 Z" fill="#d9b25f"/><path d="M17 30 L13.5 17 L17 19 L20.5 17 Z" fill="rgba(239,230,210,.5)"/><text x="17" y="3.2" text-anchor="middle" font-size="5" fill="#f0cf86" font-family="Alegreya Sans" font-weight="700" dy="0">N</text></svg></button>
+
+<div class="joystick panel" id="joystick" hidden aria-hidden="true"><div class="knob" id="knob"></div></div>
+<div class="updown" id="updown" hidden><button class="panel icon-btn" id="btn-up" aria-label="Climb" data-icon="up"></button><button class="panel icon-btn" id="btn-down" aria-label="Descend" data-icon="down"></button></div>
+
+<div class="panel floorbar" id="floorbar" hidden role="group" aria-label="Castle floors"></div>
+<aside class="panel floorpanel" id="floorpanel" hidden aria-live="polite"></aside>
+
+<div class="panel popover" id="atmo-panel" hidden role="dialog" aria-label="Light and weather"></div>
+<div class="panel popover" id="opts-panel" hidden role="dialog" aria-label="Options"></div>
+
+<dialog id="about"><div class="panel dialog-body" id="about-body"></div></dialog>
+<dialog id="postcard"><div class="panel dialog-body" id="postcard-body"></div></dialog>
+<div class="panel toast" id="toast" role="status"></div>
+
+<div id="boot" role="status" aria-live="polite">
+  <div class="boot-card">
+    <span class="crest" data-icon="crest"></span>
+    <h1>Hogwarts</h1>
+    <p id="boot-status">Unfolding the grounds…</p>
+    <div class="boot-rule"><div id="boot-bar"></div></div>
+  </div>
+</div>
+<script type="module" src="js/main.js"></script>
