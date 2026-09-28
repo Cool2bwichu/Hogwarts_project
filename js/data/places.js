@@ -59,7 +59,7 @@ export const PLACES = [
     ],
     films: 'In the films the approach runs over a long stone viaduct into a courtyard.',
     sources: [SKETCH, { title: 'Ground floor · Lexicon', url: LEX + 'hogwarts-ground-floor/' }],
-    walk: [0, -104, 0],
+    walk: [0, -104, 3.14],
   },
   {
     id: 'hall', name: 'The Great Hall', cat: 'castle', anchor: 'hall', major: true,
@@ -244,7 +244,7 @@ export const PLACES = [
     ],
     story: 'Neville breaks his wrist; Harry catches the Remembrall and is made Seeker.',
     storyCite: 'PS9',
-    walk: [-225, -58, 1.2],
+    walk: [-225, -58, -2.16],
     sources: [],
   },
   {
@@ -257,7 +257,7 @@ export const PLACES = [
       { tier: 'book', text: 'Herbology is taught in greenhouses behind the castle; Greenhouse Three holds more interesting plants.', cite: 'PS8, CS6' },
       { tier: 'interpreted', text: 'The number and form of the glasshouses are ours.', cite: 'Atlas' },
     ],
-    walk: [230, 20, 0.9],
+    walk: [230, 20, -2.48],
     sources: [{ title: 'The Greenhouses · Wizarding World', url: HP + 'the-greenhouses' }],
   },
   {
@@ -284,7 +284,7 @@ export const PLACES = [
     films: 'The films make it a round stone hut with a thatched roof.',
     story: 'Norbert the dragon hatches in the hut’s fire.',
     storyCite: 'PS14',
-    walk: [100, -250, 2.6],
+    walk: [100, -250, -0.59],
     sources: [{ title: 'Hagrid’s hut · Wizarding World', url: HP + 'hagrids-hut' }],
   },
   {
@@ -325,7 +325,7 @@ export const PLACES = [
     ],
     story: 'Snape’s worst memory unfolds beneath this tree.',
     storyCite: 'OP28',
-    walk: [-230, 64, -1.9],
+    walk: [-230, 64, 2.62],
     sources: [],
   },
   {

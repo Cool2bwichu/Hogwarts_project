@@ -7,7 +7,7 @@ import { clamp, lerp, smoothstep } from './noise.js';
 
 const LATITUDE = 56.8 * Math.PI / 180;   // the Scottish Highlands
 const DECLINATION = 0;                    // near the autumn equinox, at the start of term
-const SOLAR_NOON = 13.3;                  // British Summer Time, ~4.5° west
+export const SOLAR_NOON = 13.3;                // British Summer Time, ~4.5° west
 
 export const TIME_PRESETS = [
   { id: 'dawn', label: 'First light', hour: 7.3 },

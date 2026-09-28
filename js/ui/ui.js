@@ -4,7 +4,7 @@
 import { hydrateIcons, ICONS } from './icons.js';
 import { PLACES, CATEGORIES, TIERS, TIER_INDEX, BOOKS, TOUR } from '../data/places.js';
 import { FLOORS, ROOMS, UNPLACED } from '../data/floors.js';
-import { TIME_PRESETS, WEATHER } from '../engine/atmosphere.js';
+import { TIME_PRESETS, WEATHER, SOLAR_NOON } from '../engine/atmosphere.js';
 import { TIERS as QUALITY } from '../engine/renderer.js';
 import { PROV_COLORS } from '../engine/shared.js';
 
@@ -22,10 +22,12 @@ function timeText(h) {
 }
 
 function phaseName(el, hour) {
+  const am = hour < SOLAR_NOON;
   if (el < -6) return { name: 'Moonlight', icon: 'moon' };
-  if (el < -1) return { name: hour < 12 ? 'Before dawn' : 'Blue hour', icon: 'moon' };
-  if (el < 9) return { name: hour < 12 ? 'First light' : 'Golden hour', icon: 'sunset' };
-  if (el < 22) return { name: hour < 12 ? 'Morning' : 'Afternoon', icon: 'sun' };
+  if (el < -1) return { name: am ? 'Before dawn' : 'Blue hour', icon: 'moon' };
+  if (el < 9) return { name: am ? 'First light' : 'Golden hour', icon: 'sunset' };
+  // The Highland sun stays high for hours around noon, so go by the clock.
+  if (Math.abs(hour - SOLAR_NOON) > 1.5) return { name: am ? 'Morning' : 'Afternoon', icon: 'sun' };
   return { name: 'Midday', icon: 'sun' };
 }
 
