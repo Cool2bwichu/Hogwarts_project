@@ -104,7 +104,8 @@ void main() {
   float l = lum(m);
   m = mix(vec3(l), m, uSaturation);
   // Cool shadows, warm highlights: an old-print feel without a filter look.
-  m += (vec3(-0.012, 0.0, 0.02)) * (1.0 - smoothstep(0.0, 0.35, l));
+  // Proportional, so deep shade keeps its colour instead of sinking to navy.
+  m *= 1.0 + vec3(-0.05, 0.0, 0.07) * (1.0 - smoothstep(0.0, 0.35, l));
   vec2 q = vUv - 0.5;
   float v = 1.0 - dot(q, q) * uVignette;
   m *= clamp(v, 0.0, 1.0);

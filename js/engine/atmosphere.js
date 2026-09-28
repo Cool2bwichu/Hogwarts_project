@@ -41,6 +41,9 @@ export function sunDirection(hour, out = new THREE.Vector3()) {
 // ── Keyframes over sun elevation (degrees) ────────────────────────────────
 const K = [-18, -9, -4, 0, 4, 10, 20, 34];
 const hex = (h) => new THREE.Color(h);
+// The grade is a filter, not a colour: '#ffd8a8' means ×(1, 0.85, 0.66). Read
+// the digits as they are, or the sRGB decode roughly squares the tint.
+const filter = (h) => new THREE.Color().setStyle(h, THREE.LinearSRGBColorSpace);
 const TABLE = {
   zenith:   ['#03060f', '#101a38', '#2a3a70', '#4a64a0', '#5f86c2', '#5f8fcf', '#4d86cf', '#3f7bc9'].map(hex),
   horizon:  ['#070b16', '#1e2a48', '#4e5476', '#8f8499', '#a9a2b3', '#b3b6c4', '#b8c8d8', '#bccfde'].map(hex),
@@ -48,11 +51,11 @@ const TABLE = {
   sun:      ['#000000', '#000000', '#ff6a3a', '#ff8c4a', '#ffb070', '#ffd09a', '#fff0dc', '#fffaf2'].map(hex),
   hemiSky:  ['#3b4d7a', '#40517e', '#56608a', '#7c7c9c', '#9aa3bc', '#a9bcd6', '#b2c8e2', '#b8cfe8'].map(hex),
   hemiGround: ['#141820', '#1a1d24', '#2a2622', '#3d3328', '#4b4230', '#4f4a36', '#56553c', '#5a5a3e'].map(hex),
-  grade:    ['#8fa6ff', '#a0a8e8', '#d8b8c8', '#ffc9a0', '#ffd8a8', '#fff0d8', '#fffaf4', '#ffffff'].map(hex),
+  grade:    ['#8fa6ff', '#a0a8e8', '#d8b8c8', '#ffc9a0', '#ffd8a8', '#fff0d8', '#fffaf4', '#ffffff'].map(filter),
 };
 const SCALARS = {
   sunI:   [0, 0, 0.15, 0.9, 2.1, 3.0, 3.5, 3.8],
-  hemiI:  [0.42, 0.42, 0.44, 0.55, 0.72, 0.82, 0.9, 0.95],
+  hemiI:  [0.42, 0.42, 0.5, 0.74, 0.98, 1.1, 1.2, 1.25],
   night:  [1, 0.95, 0.6, 0.25, 0.05, 0, 0, 0],
   exposure: [1.85, 1.6, 1.2, 1.02, 0.98, 0.94, 0.9, 0.88],
   stars:  [1, 0.8, 0.25, 0, 0, 0, 0, 0],
