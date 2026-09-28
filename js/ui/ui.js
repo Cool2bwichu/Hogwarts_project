@@ -4,7 +4,7 @@
 import { hydrateIcons, ICONS } from './icons.js';
 import { PLACES, CATEGORIES, TIERS, TIER_INDEX, BOOKS, TOUR } from '../data/places.js';
 import { FLOORS, ROOMS, UNPLACED } from '../data/floors.js';
-import { TIME_PRESETS, WEATHER } from '../engine/atmosphere.js';
+import { TIME_PRESETS, WEATHER, SOLAR_NOON } from '../engine/atmosphere.js';
 import { TIERS as QUALITY } from '../engine/renderer.js';
 import { PROV_COLORS } from '../engine/shared.js';
 
@@ -22,10 +22,12 @@ function timeText(h) {
 }
 
 function phaseName(el, hour) {
+  const am = hour < SOLAR_NOON;
   if (el < -6) return { name: 'Moonlight', icon: 'moon' };
-  if (el < -1) return { name: hour < 12 ? 'Before dawn' : 'Blue hour', icon: 'moon' };
-  if (el < 9) return { name: hour < 12 ? 'First light' : 'Golden hour', icon: 'sunset' };
-  if (el < 22) return { name: hour < 12 ? 'Morning' : 'Afternoon', icon: 'sun' };
+  if (el < -1) return { name: am ? 'Before dawn' : 'Blue hour', icon: 'moon' };
+  if (el < 9) return { name: am ? 'First light' : 'Golden hour', icon: 'sunset' };
+  // The Highland sun stays high for hours around noon, so go by the clock.
+  if (Math.abs(hour - SOLAR_NOON) > 1.5) return { name: am ? 'Morning' : 'Afternoon', icon: 'sun' };
   return { name: 'Midday', icon: 'sun' };
 }
 
@@ -157,7 +159,7 @@ export function createUI(app) {
     <div class="switch-row"><span>Let the day unfold<small>A day passes in about four minutes</small></span><button class="switch" id="sw-animate" role="switch" aria-checked="false" aria-label="Let the day unfold"></button></div>
     <div class="divider"></div>
     <div class="eyebrow" style="margin-bottom:8px">Weather</div>
-    <div class="grid-chips" id="weather-chips">${WEATHER.map((w) => `<button class="chip" data-weather="${w.id}"><span data-icon="${weatherIcon[w.id]}"></span>${esc(w.label.replace('Highland ', ''))}</button>`).join('')}</div>`;
+    <div class="grid-chips" id="weather-chips">${WEATHER.map((w) => `<button class="chip" data-weather="${w.id}"><span data-icon="${weatherIcon[w.id]}"></span>${esc(w.label.replace('Highland ', '').replace(/^./, (c) => c.toUpperCase()))}</button>`).join('')}</div>`;
   hydrateIcons(atmoPanel);
   const place = (panel, anchor, align = 'right') => {
     const r = anchor.getBoundingClientRect();
@@ -300,7 +302,8 @@ export function createUI(app) {
     $('mapview').hidden = m !== 'map';
     $('floorbar').hidden = m !== 'map';
     $('floorpanel').hidden = m !== 'map' || !state.floor;
-    $('tour-card').hidden = m === 'map' || state.tourOn || state.tourDismissed;
+    // The guided flight is offered from Explore; elsewhere it would cover the joystick.
+    $('tour-card').hidden = m !== 'explore' || state.tourOn || state.tourDismissed;
     syncRail();
   }
   function setMode(m) {
@@ -354,7 +357,7 @@ export function createUI(app) {
   function stopTour() {
     state.tourOn = false;
     $('tour-live').hidden = true;
-    $('tour-card').hidden = state.tourDismissed || app.mode === 'map';
+    $('tour-card').hidden = state.tourDismissed || app.mode !== 'explore';
     app.highlight(null);
   }
   function goStop(i) {

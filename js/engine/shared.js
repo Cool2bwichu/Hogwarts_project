@@ -71,7 +71,8 @@ export const U = {
   uFogColor: { value: new THREE.Color(0.7, 0.75, 0.8) },
   uFogSunColor: { value: new THREE.Color(1, 0.85, 0.7) },
   uZenith: { value: new THREE.Color(0.3, 0.45, 0.7) },
-  uWindowGlow: { value: new THREE.Color(1.0, 0.52, 0.2) },
+  uWindowGlow: { value: new THREE.Color(1.0, 0.22, 0.045) }, // candle flame, linear
+  uGrade: { value: new THREE.Color(1, 1, 1) },   // the frame's colour filter
   uHighlight: { value: new THREE.Vector4(0, 0, 0, 0) }, // xz centre, radius, strength
 };
 
@@ -364,7 +365,7 @@ export function makeGlass() {
     shader.fragmentShader = shader.fragmentShader
       .replace('#include <common>', `#include <common>
         uniform float uTime, uNight, uLens, uLensFocus;
-        uniform vec3 uWindowGlow;
+        uniform vec3 uWindowGlow, uGrade;
         uniform vec3 uProvColors[5];
         varying vec2 vLit;
         varying float vProv;
@@ -374,7 +375,9 @@ export function makeGlass() {
         {
           float on = smoothstep(0.0, 0.25, uNight - (1.0 - vLit.x) * 0.9);
           float flick = 0.86 + 0.14 * sin(uTime * (2.0 + vLit.y * 5.0) + vLit.y * 40.0) * sin(uTime * 3.1 + vLit.y * 17.0);
-          vec3 tint = mix(uWindowGlow, vec3(1.0, 0.78, 0.45), vLit.y);
+          vec3 tint = mix(uWindowGlow, vec3(1.0, 0.36, 0.1), vLit.y);
+          // Candlelight is not moonlight: undo the night grade so it stays amber.
+          tint *= luma(uGrade) / max(uGrade, vec3(0.05));
           totalEmissiveRadiance += tint * on * flick * 2.4 * step(0.58, vLit.x);
         }`)
       .replace('#include <opaque_fragment>', `#include <opaque_fragment>

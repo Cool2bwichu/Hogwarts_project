@@ -141,6 +141,11 @@ export class CameraRig {
           const t = this.target;
           this.pos.set(t.x, 0, t.z);
         }
+        // Never inside a tower or out on the loch: step to the nearest open ground,
+        // preferring the side the camera came from.
+        const [fx, fz] = this.freeSpot(this.pos.x, this.pos.z, Math.atan2(cam.position.x - this.pos.x, cam.position.z - this.pos.z));
+        this.pos.x = fx;
+        this.pos.z = fz;
         this.pos.y = this.groundAt(this.pos.x, this.pos.z) + this.eye;
         this.look.pitch = this.lookGoal.pitch = 0.02;
       }
@@ -177,6 +182,23 @@ export class CameraRig {
     this.flight = { from, to, t: 0, duration: reduce ? 0.01 : (duration ?? clamp(1.4 + travel / 700, 1.4, 4.2)), arc: clamp(travel * 0.25, 0, 500) };
     Object.assign(this.goal, { target: to.target.clone(), yaw: to.yaw, pitch: to.pitch, distance: to.distance });
     this.idleTime = 0;
+  }
+
+  /** Nearest point to (x, z) where a walker can stand, searched in rings. */
+  freeSpot(x, z, bearing = 0) {
+    const ok = (px, pz) => !this.colliders(px, pz) && this.groundAt(px, pz) >= 0.4;
+    if (ok(x, z)) return [x, z];
+    for (let r = 2; r <= 300; r += 2) {
+      const n = Math.max(8, Math.round((2 * Math.PI * r) / 3));
+      for (let k = 0; k < n; k++) {
+        // Fan out from the bearing: 0, +1, −1, +2, −2 …
+        const step = Math.ceil(k / 2) * (k % 2 ? 1 : -1);
+        const a = bearing + (step / n) * 2 * Math.PI;
+        const px = x + Math.sin(a) * r, pz = z + Math.cos(a) * r;
+        if (ok(px, pz)) return [px, pz];
+      }
+    }
+    return [x, z];
   }
 
   /** Place the walker at a spot, facing a heading. */

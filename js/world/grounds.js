@@ -318,10 +318,16 @@ export function buildGrounds({ detail = 1 } = {}) {
     const s = SITES.harbour;
     B.prov = PROV.book;
     B.aoBase = 0;
-    // Find the cliff face along x = s.x.
-    let z = 60;
-    while (z < 110 && heightAt(s.x, z) > 7) z += 0.5;
+    // Stand the mouth just proud of the cliff face across its whole width;
+    // set any deeper, the terrain's coarse slope buries it.
     const cy = 0.4;
+    let z = 60;
+    for (let lx = -5; lx <= 5; lx += 1) {
+      let zz = 60;
+      while (zz < 110 && heightAt(s.x + lx, zz) > cy + 11) zz += 0.25;
+      z = Math.max(z, zz);
+    }
+    z += 2.4;
     const o = archOutline(9, 10, 8);
     const nrm = new THREE.Vector3(0, 0, 1);
     const P = (lx, ly, off) => new THREE.Vector3(s.x + lx, cy + ly, z - 1.2 + off);
@@ -397,13 +403,18 @@ export function buildGrounds({ detail = 1 } = {}) {
   {
     B.prov = PROV.interpreted;
     const s = SITES.hogsmeade;
-    for (let k = 0; k < 46; k++) {
+    const lots = [];
+    for (let k = 0, tries = 0; k < 46 && tries < 400; tries++) {
       const along = (rand() - 0.5) * 220;
       const off = (rand() < 0.5 ? -1 : 1) * (9 + rand() * 18);
       const x = s.x + off + along * 0.12, z = s.z + along;
+      const w = 6 + rand() * 4, d = 7 + rand() * 5, hh = 4.5 + rand() * 3.5;
+      // Every cottage on its own plot: no walls running through each other.
+      if (lots.some((l) => Math.abs(l.x - x) < (l.w + w) / 2 + 1.5 && Math.abs(l.z - z) < (l.d + d) / 2 + 1.5)) continue;
+      lots.push({ x, z, w, d });
+      k++;
       const y = H(x, z) - 0.3;
       B.aoBase = y;
-      const w = 6 + rand() * 4, d = 7 + rand() * 5, hh = 4.5 + rand() * 3.5;
       setTint(B, k);
       B.box(rand() < 0.3 ? 'plaster' : 'stone', x, y, z, w, hh, d, 0, { faces: 'nsewt' });
       B.gableRoof('slate', 'stone', x - w / 2, x + w / 2, z - d / 2, z + d / 2, y + hh, y + hh + w * 0.75, 'z', { overhang: 0.5 });

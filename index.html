@@ -1,3 +1,6 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
 <title>Hogwarts Living Atlas</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Explore Hogwarts and its grounds in 3D, laid out from J.K. Rowling's own sketch and the novels, with the evidence behind every building.">
@@ -257,6 +260,9 @@
     .atmo small { display: none; }
     .guide-toggle { top: auto; bottom: calc(var(--bottom) + 64px); }
     .guide, .card, .floorpanel { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 72vh; border-radius: 14px 14px 10px 10px; }
+    .guide { z-index: 21; }
+    .joystick { bottom: calc(var(--bottom) + 118px); }
+    .updown { bottom: calc(var(--bottom) + 126px); }
     .card { animation: sheetIn 280ms ease; }
     @keyframes sheetIn { from { opacity: 0; transform: translateY(24px); } }
     .rail { top: calc(var(--top) + 64px); transform: none; }
@@ -267,7 +273,7 @@
     .opts-btn { right: calc(var(--edge) + 56px); }
     .floorbar { top: calc(var(--top) + 64px); }
   }
-  @media (max-width: 460px) { .mode span { display: none; } .mode { padding: 0 16px; } }
+  @media (max-width: 460px) { .mode span:not([data-icon]) { display: none; } .mode { padding: 0 16px; } }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition-duration: 0ms !important; } }
 </style>
 <script type="importmap">

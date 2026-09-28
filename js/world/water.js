@@ -137,7 +137,8 @@ void main() {
 
   vec3 H = normalize(uSunDir + V);
   float nh = max(dot(N, H), 0.0);
-  col += uSunColor * (pow(nh, 420.0) * 7.0 + pow(nh, 55.0) * 0.12) * uSunVis;
+  // Sun glints by day; after dark uSunDir is the moon, laying a silver path.
+  col += uSunColor * (pow(nh, 420.0) * 7.0 + pow(nh, 55.0) * 0.12) * max(uSunVis, uNight);
 
   float fn = texture2D(uNoise, vWPos.xz * 0.11 + uTime * 0.015).r;
   float foam = smoothstep(1.4, 0.05, depth) * smoothstep(0.42, 0.72, fn + 0.25 * sin(uTime * 1.2 + depth * 7.0));
