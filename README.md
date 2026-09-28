@@ -14,10 +14,13 @@ The atlas is plain HTML and ES modules with no build step. Browsers won't load
 modules from `file://`, so serve the folder:
 
 ```sh
-python3 -m http.server 8000
+cd "Hogwarts Living Atlas"          # the folder with index.html in it
+python3 -m http.server 8000 --bind 127.0.0.1
 # then open http://localhost:8000
 ```
 
+Start the server from inside the project folder: it shares whatever folder it
+is started in, and `--bind 127.0.0.1` keeps it visible to your machine only.
 Any static server works. Three.js loads from jsDelivr, so the page needs a
 network connection and a browser with WebGL 2.
 
