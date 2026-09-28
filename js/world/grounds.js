@@ -318,10 +318,16 @@ export function buildGrounds({ detail = 1 } = {}) {
     const s = SITES.harbour;
     B.prov = PROV.book;
     B.aoBase = 0;
-    // Find the cliff face along x = s.x.
-    let z = 60;
-    while (z < 110 && heightAt(s.x, z) > 7) z += 0.5;
+    // Stand the mouth just proud of the cliff face across its whole width;
+    // set any deeper, the terrain's coarse slope buries it.
     const cy = 0.4;
+    let z = 60;
+    for (let lx = -5; lx <= 5; lx += 1) {
+      let zz = 60;
+      while (zz < 110 && heightAt(s.x + lx, zz) > cy + 11) zz += 0.25;
+      z = Math.max(z, zz);
+    }
+    z += 2.4;
     const o = archOutline(9, 10, 8);
     const nrm = new THREE.Vector3(0, 0, 1);
     const P = (lx, ly, off) => new THREE.Vector3(s.x + lx, cy + ly, z - 1.2 + off);
