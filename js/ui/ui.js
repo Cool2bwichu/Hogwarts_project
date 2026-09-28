@@ -159,7 +159,7 @@ export function createUI(app) {
     <div class="switch-row"><span>Let the day unfold<small>A day passes in about four minutes</small></span><button class="switch" id="sw-animate" role="switch" aria-checked="false" aria-label="Let the day unfold"></button></div>
     <div class="divider"></div>
     <div class="eyebrow" style="margin-bottom:8px">Weather</div>
-    <div class="grid-chips" id="weather-chips">${WEATHER.map((w) => `<button class="chip" data-weather="${w.id}"><span data-icon="${weatherIcon[w.id]}"></span>${esc(w.label.replace('Highland ', ''))}</button>`).join('')}</div>`;
+    <div class="grid-chips" id="weather-chips">${WEATHER.map((w) => `<button class="chip" data-weather="${w.id}"><span data-icon="${weatherIcon[w.id]}"></span>${esc(w.label.replace('Highland ', '').replace(/^./, (c) => c.toUpperCase()))}</button>`).join('')}</div>`;
   hydrateIcons(atmoPanel);
   const place = (panel, anchor, align = 'right') => {
     const r = anchor.getBoundingClientRect();
@@ -302,7 +302,8 @@ export function createUI(app) {
     $('mapview').hidden = m !== 'map';
     $('floorbar').hidden = m !== 'map';
     $('floorpanel').hidden = m !== 'map' || !state.floor;
-    $('tour-card').hidden = m === 'map' || state.tourOn || state.tourDismissed;
+    // The guided flight is offered from Explore; elsewhere it would cover the joystick.
+    $('tour-card').hidden = m !== 'explore' || state.tourOn || state.tourDismissed;
     syncRail();
   }
   function setMode(m) {
@@ -356,7 +357,7 @@ export function createUI(app) {
   function stopTour() {
     state.tourOn = false;
     $('tour-live').hidden = true;
-    $('tour-card').hidden = state.tourDismissed || app.mode === 'map';
+    $('tour-card').hidden = state.tourDismissed || app.mode !== 'explore';
     app.highlight(null);
   }
   function goStop(i) {
