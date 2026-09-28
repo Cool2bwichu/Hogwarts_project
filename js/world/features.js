@@ -219,53 +219,72 @@ export function buildRocks({ amount = 1 } = {}) {
 
 // ─── Smoke (Hagrid's chimney, the Hogwarts Express) ───────────────────────
 export function buildSmoke(sources) {
-  const perSource = 26;
+  // Puffs are sized in metres: a chimney plume starts about a metre wide and
+  // spreads to five as it drifts downwind.
+  const perSource = 48;
   const n = sources.length * perSource;
   const geo = new THREE.BufferGeometry();
   const seed = new Float32Array(n * 4);
   const pos = new Float32Array(n * 3);
+  const rand = mulberry32(3);
   sources.forEach((src, si) => {
     for (let i = 0; i < perSource; i++) {
       const k = si * perSource + i;
       pos.set([src.pos.x, src.pos.y, src.pos.z], k * 3);
-      seed.set([i / perSource, Math.random(), src.scale, src.dark ? 1 : 0], k * 4);
+      seed.set([i / perSource, rand(), src.scale, src.dark ? 1 : 0], k * 4);
     }
   });
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   geo.setAttribute('aSeed', new THREE.BufferAttribute(seed, 4));
   geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1e5);
   const mat = new THREE.ShaderMaterial({
-    uniforms: { ...U, uPixel: { value: 1 } },
+    uniforms: { ...U, uViewH: { value: 900 } },
     transparent: true,
     depthWrite: false,
     vertexShader: /* glsl */ `
-      uniform float uTime, uWind, uPixel;
+      uniform float uTime, uWind, uViewH;
       attribute vec4 aSeed;
       varying float vAlpha;
       varying float vDark;
+      varying float vSpin;
+      varying float vLife;
       void main() {
-        float life = fract(aSeed.x + uTime * 0.07 * (0.8 + aSeed.y * 0.4));
+        float life = fract(aSeed.x + uTime * 0.045 * (0.85 + aSeed.y * 0.3));
         vec3 p = position;
         float s = aSeed.z;
-        p.y += life * 22.0 * s;
-        p.x += life * life * (8.0 + uWind * 30.0) * s + sin(uTime * 0.7 + aSeed.y * 9.0) * life * 2.0 * s;
-        p.z += life * life * (3.0 + uWind * 10.0) * s;
+        // Warm air rises fast, then slows and leans with the wind.
+        p.y += (life - 0.4 * life * life) * 20.0 * s;
+        float drift = life * life * (5.0 + uWind * 22.0) * s;
+        p.x += drift + sin(uTime * 0.5 + aSeed.y * 9.0) * life * 1.6 * s;
+        p.z += drift * 0.35 + cos(uTime * 0.4 + aSeed.y * 7.0) * life * 1.2 * s;
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
         gl_Position = projectionMatrix * mv;
-        gl_PointSize = (2.0 + life * 9.0) * s * 60.0 * uPixel / max(-mv.z, 1.0);
-        vAlpha = smoothstep(0.0, 0.1, life) * (1.0 - life) * 0.55;
+        float metres = (0.9 + life * 4.5) * s;
+        gl_PointSize = metres * projectionMatrix[1][1] * 0.5 * uViewH / max(-mv.z, 0.5);
+        vAlpha = smoothstep(0.0, 0.08, life) * pow(1.0 - life, 1.4) * 0.5;
         vDark = aSeed.w;
+        vSpin = aSeed.y * 6.2832;
+        vLife = life;
       }`,
     fragmentShader: /* glsl */ `
-      uniform vec3 uFogColor;
+      uniform sampler2D uNoise;
+      uniform vec3 uFogColor, uSunColor;
       varying float vAlpha;
       varying float vDark;
+      varying float vSpin;
+      varying float vLife;
       void main() {
         vec2 c = gl_PointCoord - 0.5;
         float d = dot(c, c) * 4.0;
         if (d > 1.0) discard;
-        vec3 col = mix(vec3(0.72, 0.72, 0.7), vec3(0.3, 0.3, 0.3), vDark) * (0.4 + 0.6 * uFogColor);
-        gl_FragColor = vec4(col, (1.0 - d) * vAlpha);
+        // A wisp of noise per puff, turned at random so no two match.
+        mat2 r = mat2(cos(vSpin), -sin(vSpin), sin(vSpin), cos(vSpin));
+        vec2 uv = r * c * (0.35 + vLife * 0.25) + vec2(vSpin * 0.13, vLife * 0.2);
+        float wisp = texture2D(uNoise, uv).g * 0.7 + texture2D(uNoise, uv * 2.3 + 0.37).b * 0.3;
+        float a = smoothstep(1.0, 0.15, d) * smoothstep(0.3, 0.7, wisp + (1.0 - d) * 0.25);
+        vec3 base = mix(vec3(0.78, 0.78, 0.76), vec3(0.34, 0.33, 0.32), vDark);
+        vec3 col = base * (0.35 + 0.65 * uFogColor) + base * uSunColor * 0.12;
+        gl_FragColor = vec4(col, a * vAlpha);
       }`,
   });
   const pts = new THREE.Points(geo, mat);

@@ -277,6 +277,7 @@ async function boot() {
     U.uSnow.value = atmo.snowCover;
     U.uWet.value = atmo.wetness;
     U.uWind.value = atmo.wind;
+    U.uGrade.value.copy(o.grade);
     app.lens += (app.lensTarget - app.lens) * Math.min(1, dt * 5);
     U.uLens.value = app.lens < 0.002 ? 0 : app.lens;
     if (app.highlightId) U.uHighlight.value.w = Math.min(1, U.uHighlight.value.w + dt * 2);
@@ -306,9 +307,14 @@ async function boot() {
     const wd = camera.position.distanceTo(willow.position);
     const want = 0.12 + 0.9 * (1 - Math.min(1, Math.max(0, (wd - 12) / 60)));
     willow.uniforms.uWhomp.value += (want - willow.uniforms.uWhomp.value) * Math.min(1, dt * 1.5);
-    smoke.material.uniforms.uPixel.value = (gl.getPixelRatio() * gl.domElement.clientHeight) / 900;
+    smoke.material.uniforms.uViewH.value = gl.getPixelRatio() * gl.domElement.clientHeight;
     const glow = Math.max(0, atmo.night - 0.15) / 0.85;
-    grounds.lampMat.color.setRGB(0.2 + 5 * glow, 0.15 + 3.2 * glow, 0.08 + 1.4 * glow);
+    // Lamp flames, compensated for the grade like the castle windows.
+    const gradeL = o.grade.r * 0.2126 + o.grade.g * 0.7152 + o.grade.b * 0.0722;
+    grounds.lampMat.color.setRGB(
+      (0.2 + 4.2 * glow) * gradeL / Math.max(o.grade.r, 0.05),
+      (0.12 + 1.5 * glow) * gradeL / Math.max(o.grade.g, 0.05),
+      (0.05 + 0.3 * glow) * gradeL / Math.max(o.grade.b, 0.05));
     grounds.materials.plant.emissiveIntensity = glow * 0.9;
     owls.visible = atmo.rain < 0.5;
     grass.update(camera, R, (R.tier.grass || 0) > 0, groundAt(camera.position.x, camera.position.z));
